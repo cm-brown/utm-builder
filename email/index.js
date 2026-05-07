@@ -125,7 +125,12 @@ const APPS_SCRIPT =
     "      newCount = rows[rowIndex - 1][1] + 1;\n" +
     "      countersSheet.getRange(rowIndex, 2).setValue(newCount);\n" +
     "    }\n" +
-    "    return ContentService.createTextOutput(JSON.stringify({ success: true, serial: newCount })).setMimeType(ContentService.MimeType.JSON);\n" +
+    "    const result = JSON.stringify({ success: true, serial: newCount });\n" +
+    "    const callback = e.parameter.callback;\n" +
+    "    if (callback) {\n" +
+    "      return ContentService.createTextOutput(callback + \"(\" + result + \")\").setMimeType(ContentService.MimeType.JAVASCRIPT);\n" +
+    "    }\n" +
+    "    return ContentService.createTextOutput(result).setMimeType(ContentService.MimeType.JSON);\n" +
     "  }\n" +
     "}";
 
