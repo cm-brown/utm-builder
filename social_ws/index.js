@@ -1,3 +1,5 @@
+const BITLY_TOKEN = "2387c61cc46498dc6f1de82aadb610e031ddab0d";
+
 // ─────────────────────────────────────────────
 // CONFIG
 // ─────────────────────────────────────────────
@@ -185,6 +187,7 @@ function isValid() {
 function updatePreview() {
     var valid = isValid();
     document.getElementById("copy-btn").disabled = !valid;
+    document.getElementById("shorten-btn").disabled = !isValid();
     var built = buildURL();
     var previewCard = document.getElementById("preview-card");
     if (!built.url) { previewCard.style.display = "none"; return; }
@@ -204,6 +207,53 @@ function updatePreview() {
         });
     }
     document.getElementById("url-preview").innerHTML = html;
+}
+
+async function shortenUrl(longurl){
+    try {
+        const response = await fetch("https://api-ssl.bitly.com/v4/shorten", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${BITLY_TOKEN}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ long_url: longurl })
+        });
+        const data = await response.json();
+        return data.link || null;
+    } catch (error) {
+        console.error("Error shortening URL:", error);
+        return null;
+    }
+}
+
+var lastShortUrl = null;
+
+async function handleShorten() {
+    if (!isValid()) return;
+    var built = buildURL();
+    var btn = document.getElementById("shorten-btn");
+    btn.textContent = "Shortening..."; btn.disabled = true;
+
+    var short = await shortenUrl(built.full);
+    btn.textContent = "Shorten"; btn.disabled = false;
+
+    if (short) {
+        lastShortUrl = short;
+        document.getElementById("short-url-display").textContent = short;
+        document.getElementById("short-url-card").style.display = "block";
+    } else {
+        showLogStatus("err", "Bitly error");
+        setTimeout(function() { document.getElementById("log-status").style.display = "none"; }, 3000);
+    }
+}
+
+function copyShortUrl() {
+    if (!lastShortUrl) return;
+    navigator.clipboard.writeText(lastShortUrl);
+    var btn = document.getElementById("copy-short-btn");
+    btn.textContent = "Copied!";
+    setTimeout(function() { btn.textContent = "Copy Short URL"; }, 2000);
 }
 
 async function handleCopy() {

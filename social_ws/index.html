@@ -109,12 +109,19 @@
             <div class="preview-label" id="preview-label"></div>
             <div class="url-preview" id="url-preview"></div>
         </div>
+        <div class="card" id="short-url-card" style="display:none">
+            <div class="preview-label valid">Shortened URL</div>
+            <div class="url-preview" id="short-url-display"></div>
+            <button class="btn-primary" style="margin-top:10px;width:100%" id="copy-short-btn" onclick="copyShortUrl()">Copy Short URL</button>
+        </div>
 
         <div class="actions">
             <button class="btn-primary" id="copy-btn" onclick="handleCopy()" disabled>Copy URL</button>
+            <button class="btn-primary" id="shorten-btn" onclick="handleShorten()" disabled>Shorten</button>
             <span class="log-status" id="log-status" style="display:none"></span>
             <button class="btn-secondary" onclick="resetForm()">Reset</button>
         </div>
+
 
     </div>
 
